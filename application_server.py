@@ -1,4 +1,4 @@
-from _sockets import socket_server
+from . import socket_server
 import traceback
 
 
@@ -21,15 +21,17 @@ class ApplicationServer(socket_server.SocketServer):
 
             print('=> recieved message: ', msg)
             if not (isinstance(msg, dict) and "method" in msg):
-                note = f'Message has wrong format\nMessege is: "{msg}"'
-                print(note)
-                exit_code = note
+                response = f"!=>Recieved wrong format message\nMessage is: '{msg}'"
+                print(response)
             else:
                 try:
-                    method = getattr(self, msg.get('method'))
-                    exit_code = method(*msg.get('args'))
-                except (AttributeError, TypeError) as e:
+                    response = self.handle_massage(msg)
+                except Exception as e:
                     traceback.print_exc()
-                    exit_code = str(e)
-            self.send_data(client, exit_code)
+                    response = str(e)
+            self.send_data(client, response)
             print(f"=> End processing clinet: {peername}\n----------------")
+
+    def handle_massage(self, msg):
+        method = getattr(self, msg.get('method'))
+        return method(*msg.get('args'))

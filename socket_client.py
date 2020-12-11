@@ -13,7 +13,9 @@ class SocketClient():
     def __enter__(self):
         return self
 
-    def __exit__(self):
+    def __exit__(self, exc_type, exc_value, exc_tracebach):
+        if exc_type:
+            print('!=> Exceptioin occured: {}'.format(exc_type))
         self.close_connection()
 
     def set_connection(self):

@@ -18,9 +18,9 @@ class SocketServer():
     def __exit__(self, exc_type, exc_value, exc_tracebach):
         if exc_type:
             print('!=> Exceptioin occured: {}'.format(exc_type))
-        self._finish_server_proces()
+        self._finish_server_process()
 
-    def _finish_server_proces(self):
+    def _finish_server_process(self):
         for client  in self.connections:
             print("= Closing client socket: ", client.getpeername())
             client.close()
