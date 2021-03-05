@@ -25,13 +25,13 @@ class ApplicationServer(socket_server.SocketServer):
                 print(response)
             else:
                 try:
-                    response = self.handle_massage(msg)
+                    response = self.handle_massage(msg, client)
                 except Exception as e:
                     traceback.print_exc()
                     response = str(e)
             self.send_data(client, response)
             print(f"=> End processing clinet: {peername}\n----------------")
 
-    def handle_massage(self, msg):
+    def handle_massage(self, msg, client):
         method = getattr(self, msg.get('method'))
         return method(*msg.get('args'))

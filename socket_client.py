@@ -5,7 +5,10 @@ import json
 class SocketClient():
     def __init__(self, family=socket.AF_INET, type_proto=socket.SOCK_STREAM,
                  host='localhost', port=9090, timeout=None):
-        self.sock = socket.socket(family, type_proto)
+
+        self.sock = None
+        self.family = family
+        self.type_proto = type_proto
         self.host = host
         self.port = port
         self.timeout = timeout
@@ -13,25 +16,37 @@ class SocketClient():
     def __enter__(self):
         return self
 
-    def __exit__(self, exc_type, exc_value, exc_tracebach):
+    def __exit__(self, exc_type, exc_value, exc_traceback):
         if exc_type:
             print('!=> Exceptioin occured: {}'.format(exc_type))
         self.close_connection()
 
     def set_connection(self):
+        print("\n=> Start conneting\n"
+              "==========================\n"
+              f"HOST: {self.host}\n"
+              f"PORT: {self.port}\n"
+              "==========================")
+
+        self.sock = socket.socket(self.family, self.type_proto)
         self.sock.connect((self.host, self.port))
         self.sock.settimeout(self.timeout)
-        print(self.sock.gettimeout(), "========================")
+        print(f"=>--- Connection established --- {self.sock.getsockname()}\n")
 
     def close_connection(self):
-        print("=>---Start closing connection---")
+        print("\n=> Closing connection\n"
+              "=======================")
+
+        sockname = self.sock.getsockname()
         self.send_data('CLOSECONNREQUEST')
         try:
             print("=> Closing connection: {}".format(self.sock.getsockname()))
             self.sock.close()
         except OSError:
             self.sock.close()
-        print("=>---End closing connection---")
+
+        print("==========================")
+        print("=>--- Connection closed ---")
 
 #     @__exception_wrapper 
     def send_data(self, data, last=False):

@@ -88,8 +88,15 @@ class SocketServer():
         try:
             head_datasize = int.from_bytes(client.recv(2), 'little')
             print("=> Data to received size is: ", head_datasize)
-        except (socket.timeout, BlockingIOError) as e:
+        except (socket.timeout, BlockingIOError):
             return None
+
+        if head_datasize == 0:
+            peername = client.getpeername()
+            self.close_client(client)
+            print("!=> Socket '{}' was been closed automatically"
+                  "".format(peername))
+            return
 
         packets_count = int(head_datasize/buffer_size)
         if packets_count == 0:
@@ -118,7 +125,6 @@ class SocketServer():
 
     def send_data(self, client, data):
         print('=> Start sending data')
-#         print('Data = ', data)
 
         data = json.dumps(data)
         data = data.encode()
